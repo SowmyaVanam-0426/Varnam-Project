@@ -1,6 +1,8 @@
 # Varnam – Cloud-Native Bookstore Deployment on AWS
+![Varnam](images/1.png)
+![Varnam](images/2.png)
+![Varnam](images/3.png)
 
-![Varnam](image/varnam.png.png)
 ## Overview
 
 Varnam is a web-based bookstore application built to demonstrate containerization and deployment of a multi-tier application on AWS.
