@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #293c31;
+  background: #f5f1e8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --paper: #f5f1e8;
+  --ink: #293c31;
+  --muted: #817d6e;
+  --line: #ded8c9;
+  --gold: #9b7953;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+button { color: inherit; }
+.announcement { min-height: 34px; display:flex; justify-content:center; align-items:center; gap:12px; padding:8px 15px; background:var(--ink); color:#eee9dc; font-size:10px; letter-spacing:1.35px; text-align:center; }
+.announcement span { color:#c6aa7e; }
+.navbar { height:91px; padding:0 8%; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); position:relative; z-index:3; background:var(--paper); }
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-mark { color:var(--gold); font:48px 'Cormorant Garamond',serif; line-height:1; }
+.brand strong { display:block; font:600 30px/.9 'Cormorant Garamond',serif; letter-spacing:-.5px; }
+.brand small { display:block; margin-top:7px; font-size:8px; letter-spacing:2px; color:#827c6c; }
+.nav-links { display:flex; gap:38px; }
+.nav-links a { font-size:11px; color:#596354; transition:color .2s; }
+.nav-links a:hover { color:#a17454; }
+.nav-actions { display:flex; align-items:center; gap:22px; }
+.icon-button,.bag-button { border:0; background:none; padding:6px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+.bag-button span { font-size:10px; }
+.mobile-menu { display:none; }
+.search-strip { display:flex; align-items:center; gap:12px; padding:15px 8%; border-bottom:1px solid var(--line); background:#eeeadf; }
+.search-strip input { flex:1; border:0; outline:0; background:transparent; color:var(--ink); font-size:12px; }
+.search-strip button { border:0; background:none; cursor:pointer; }
+.hero { min-height:555px; padding:76px 12% 65px; display:grid; grid-template-columns:1.05fr .95fr; gap:8%; align-items:center; position:relative; overflow:hidden; }
+.hero-copy { padding:5px 0 0; }
+.eyebrow { display:flex; align-items:center; gap:8px; color:var(--gold); font-size:9px; font-weight:600; letter-spacing:2px; }
+.hero h1 { margin:25px 0 18px; font:400 clamp(62px,7vw,88px)/.88 'Cormorant Garamond',serif; letter-spacing:-2px; }
+em { color:#92715b; font-weight:400; }
+.hero-copy > p { max-width:405px; color:var(--muted); font-size:12px; line-height:2.05; }
+.primary-link { display:inline-flex; align-items:center; gap:22px; margin-top:23px; padding:15px 19px; background:var(--ink); color:#f5f1e8; font-size:10px; letter-spacing:.3px; transition:background .2s; }
+.primary-link:hover { background:#52664e; }
+.hero-note { display:flex; align-items:center; gap:9px; margin-top:31px; color:#827b6b; font:italic 16px 'Cormorant Garamond',serif; }
+.hero-note span { color:var(--gold); font-size:18px; }
+.hero-visual { max-width:430px; width:100%; justify-self:end; transform:rotate(1.2deg); }
+.hero-art { min-height:365px; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#e6e4d3; border:1px solid #c7c5ae; outline:1px solid #c7c5ae; outline-offset:8px; text-align:center; }
+.art-corner { position:absolute; top:16px; right:20px; color:#879078; font-size:27px; }
+.art-sun { color:#a4875d; font-size:61px; line-height:1; }
+.art-title { margin:18px 0; color:#344638; font:italic 48px/.94 'Cormorant Garamond',serif; }
+.art-flora { color:#77866c; font-size:30px; }
+.art-edition { position:absolute; bottom:19px; color:#89846f; font-size:8px; letter-spacing:2px; }
+.visual-caption { display:block; text-align:center; margin-top:24px; color:#89816e; font-size:8px; letter-spacing:2px; }
+.hero-side-note { position:absolute; right:27px; top:50%; writing-mode:vertical-rl; color:#aaa18d; font-size:8px; letter-spacing:2px; }
+.intro-band { padding:32px 15px 36px; background:#eae6da; text-align:center; border-top:1px solid #e1dbcd; border-bottom:1px solid #e1dbcd; }
+.intro-band > span { display:block; height:24px; color:#a88960; font:42px 'Cormorant Garamond',serif; }
+.intro-band p { margin:5px 0 8px; font:italic 26px 'Cormorant Garamond',serif; color:#4d5948; }
+.intro-band small { color:#948b78; font-size:8px; letter-spacing:2px; }
+.section-wrap { padding-left:9%; padding-right:9%; }
+.collection { padding-top:82px; padding-bottom:91px; }
+.section-heading { display:flex; justify-content:space-between; align-items:end; margin-bottom:35px; }
+.section-heading h2,.cart-summary h2 { margin:13px 0 0; font:400 55px/.95 'Cormorant Garamond',serif; letter-spacing:-1px; }
+.section-heading > p { margin:0 0 5px; color:var(--muted); font:italic 16px/1.5 'Cormorant Garamond',serif; text-align:right; }
+.collection-tools { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:13px 0; margin-bottom:28px; }
+.category-tabs { display:flex; gap:23px; }
+.category-tabs button { padding:5px 0; border:0; border-bottom:1px solid transparent; background:none; color:#8a8576; font-size:10px; cursor:pointer; }
+.category-tabs button.active { color:var(--ink); border-color:#8f795b; }
+.collection-tools > span { color:#99917e; font-size:8px; letter-spacing:1.3px; }
+.book-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:35px 24px; }
+.book-card { min-width:0; }
+.cover-wrap { position:relative; padding:13px 12px 16px; background:#eeeadf; }
+.book-cover { height:252px; padding:17px 13px; display:flex; flex-direction:column; justify-content:space-between; align-items:center; text-align:center; color:#f4eddf; border:1px solid #ffffff55; outline:1px solid #ffffff40; outline-offset:-6px; box-shadow:5px 8px 14px #2b34251c; transition:transform .25s; }
+.book-card:hover .book-cover { transform:translateY(-5px) rotate(-1deg); }
+.cover-top { font-size:6px; letter-spacing:1.4px; opacity:.8; }
+.book-cover strong { max-width:155px; font:500 29px/.98 'Cormorant Garamond',serif; }
+.cover-ornament { font-size:25px; opacity:.8; }
+.cover-author { font:italic 11px 'Cormorant Garamond',serif; }
+.cover-bottom { font-size:22px; }
+.sage { background:#71816b; }.rose { background:#9a7272; }.ochre { background:#a28a62; }.wine { background:#70464b; }.moss { background:#596c56; }.blue { background:#667b80; }.plum { background:#756174; }.forest { background:#354d3d; }
+.book-ribbon { position:absolute; bottom:23px; right:0; padding:6px 9px; background:#f5f1e8; color:#7e715c; font:italic 11px 'Cormorant Garamond',serif; box-shadow:0 2px 5px #00000012; }
+.book-info { padding:15px 3px 0; }
+.book-category { color:#a0845e; font-size:8px; letter-spacing:1.5px; }
+.book-info h3 { margin:7px 0 3px; font:600 22px/1.05 'Cormorant Garamond',serif; }
+.book-info > p { margin:0; color:#8b8577; font:italic 13px 'Cormorant Garamond',serif; }
+.book-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:11px; border-top:1px solid var(--line); }
+.book-bottom strong { font-size:11px; font-weight:600; }
+.book-bottom button { display:inline-flex; align-items:center; gap:5px; padding:7px 9px; border:1px solid #a9a58f; background:transparent; color:#4b5c48; font-size:9px; cursor:pointer; transition:all .2s; }
+.book-bottom button:hover { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.empty-state { grid-column:1/-1; padding:50px 0; text-align:center; color:var(--muted); font:italic 20px 'Cormorant Garamond',serif; }
+.story-section { position:relative; padding:77px 20px 83px; background:#e7e5d7; text-align:center; }
+.story-flower { color:#8a967c; font-size:36px; margin-bottom:14px; }
+.story-section .eyebrow { justify-content:center; }
+.story-section h2 { margin:19px 0; font:400 58px/.94 'Cormorant Garamond',serif; }
+.story-section > p { max-width:470px; margin:0 auto; color:#797869; font-size:11px; line-height:2.1; }
+.story-section > a { display:inline-flex; align-items:center; gap:12px; margin-top:25px; padding-bottom:5px; border-bottom:1px solid #8b795d; font-size:10px; }
+.cart-summary { display:flex; justify-content:space-between; align-items:center; padding-top:54px; padding-bottom:54px; }
+.cart-summary h2 { font-size:40px; }
+.cart-detail { display:grid; grid-template-columns:auto auto; gap:5px 22px; align-items:center; text-align:right; }
+.cart-detail span { color:#817d6e; font-size:10px; }
+.cart-detail strong { font:500 24px 'Cormorant Garamond',serif; }
+.cart-detail small { grid-column:1/-1; color:#99917e; font-size:9px; }
+.footer { padding:30px 15px 25px; background:var(--ink); color:#eee9dc; text-align:center; }
+.footer-brand { font:30px 'Cormorant Garamond',serif; }
+.footer-brand strong { font-weight:500; }
+.footer p { margin:5px 0 20px; color:#c2bcae; font:italic 14px 'Cormorant Garamond',serif; }
+.footer > span { color:#aaa995; font-size:7px; letter-spacing:1.8px; }
+@media (max-width:900px) {
+  .navbar { padding:0 5%; }
+  .hero { padding-left:8%; padding-right:8%; }
+  .book-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:35px 22px; }
+  .section-wrap { padding-left:6%; padding-right:6%; }
+}
+@media (max-width:650px) {
+  .navbar { height:76px; }
+  .mobile-menu { display:inline-flex; order:3; }
+  .nav-actions { margin-left:auto; margin-right:10px; }
+  .nav-links { display:none; position:absolute; top:75px; left:0; right:0; padding:20px 6%; background:var(--paper); border-bottom:1px solid var(--line); flex-direction:column; gap:18px; }
+  .nav-links.open { display:flex; }
+  .brand strong { font-size:27px; }
+  .hero { grid-template-columns:1fr; gap:45px; padding:60px 9% 55px; }
+  .hero h1 { font-size:70px; }
+  .hero-visual { justify-self:center; max-width:360px; }
+  .hero-art { min-height:315px; }
+  .hero-side-note { display:none; }
+  .section-heading { align-items:start; gap:15px; flex-direction:column; }
+  .section-heading h2 { font-size:48px; }
+  .section-heading > p { text-align:left; }
+  .collection-tools { align-items:flex-start; gap:12px; flex-direction:column; }
+  .category-tabs { gap:18px; flex-wrap:wrap; }
+  .book-grid { gap:27px 13px; }
+  .cover-wrap { padding:9px 8px 13px; }
+  .book-cover { height:205px; padding:13px 8px; }
+  .book-cover strong { font-size:24px; }
+  .book-ribbon { font-size:9px; bottom:18px; }
+  .book-info h3 { font-size:19px; }
+  .book-bottom { align-items:flex-start; gap:8px; flex-direction:column; }
+  .story-section h2 { font-size:49px; }
+  .cart-summary { gap:25px; align-items:flex-start; flex-direction:column; }
+  .cart-detail { text-align:left; }
+}
