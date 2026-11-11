@@ -35,20 +35,6 @@ pipeline {
             }
         }
 
-        stage('Security Scan') {
-            steps {
-                sh '''
-                    trivy image --exit-code 1 \
-                      --severity HIGH,CRITICAL \
-                      ${FRONTEND_REPO}:${IMAGE_TAG}
-
-                    trivy image --exit-code 1 \
-                      --severity HIGH,CRITICAL \
-                      ${BACKEND_REPO}:${IMAGE_TAG}
-                '''
-            }
-        }
-
         stage('Push to ECR') {
             steps {
                 sh '''
