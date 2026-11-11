@@ -35,29 +35,31 @@ pipeline {
             }
         }
 
-      steps {
-        withCredentials([[
-            $class: 'AmazonWebServicesCredentialsBinding',
-            credentialsId: 'aws'
-        ]]) {
-                sh '''
-                    ACCOUNT_ID=$(aws sts get-caller-identity \
-                      --query Account --output text)
+        stage('Push to ECR') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws'
+                ]]) {
+                    sh '''
+                        ACCOUNT_ID=$(aws sts get-caller-identity \
+                          --query Account --output text)
 
-                    REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                        REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-                    aws ecr get-login-password --region ${AWS_REGION} |
-                      docker login --username AWS --password-stdin ${REGISTRY}
+                        aws ecr get-login-password --region ${AWS_REGION} |
+                          docker login --username AWS --password-stdin ${REGISTRY}
 
-                    docker tag ${FRONTEND_REPO}:${IMAGE_TAG} \
-                      ${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
+                        docker tag ${FRONTEND_REPO}:${IMAGE_TAG} \
+                          ${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
 
-                    docker tag ${BACKEND_REPO}:${IMAGE_TAG} \
-                      ${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
+                        docker tag ${BACKEND_REPO}:${IMAGE_TAG} \
+                          ${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
 
-                    docker push ${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
-                    docker push ${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
-                '''
+                        docker push ${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
+                        docker push ${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
+                    '''
+                }
             }
         }
     }
