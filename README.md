@@ -1,15 +1,18 @@
 # Varnam – Cloud-Native Bookstore Deployment on AWS
+
+**Automating Application Delivery with Terraform, Docker, Jenkins and AWS**
+
 ![Varnam](images/1.png)
 ![Varnam](images/2.png)
 ![Varnam](images/3.png)
 
 ## Overview
 
-Varnam is a web-based bookstore application built to demonstrate containerization and deployment of a multi-tier application on AWS.
+Varnam is a cloud-native bookstore application deployed on AWS using Infrastructure as Code and CI/CD automation.
 
-The application uses a React frontend and FastAPI backend, packaged as separate Docker images and stored in Amazon Elastic Container Registry (ECR). The images are pulled onto EC2 instances for deployment.
+The application consists of a React frontend, FastAPI backend and PostgreSQL database. Docker is used to containerize the application, while Terraform provisions the AWS infrastructure.
 
-Infrastructure is provisioned using Terraform.
+Jenkins is integrated with GitHub using webhooks to automate Docker image builds and push application images to Amazon ECR.
 
 ## Technology Stack
 
@@ -19,6 +22,8 @@ Infrastructure is provisioned using Terraform.
 | Backend | Python, FastAPI |
 | Database | PostgreSQL |
 | Containerization | Docker |
+| CI/CD | Jenkins |
+| Source Control | Git, GitHub |
 | Container Registry | Amazon ECR |
 | Compute | Amazon EC2 |
 | Load Balancing | Application Load Balancer |
@@ -30,41 +35,36 @@ Infrastructure is provisioned using Terraform.
 ## Architecture
 
 ```text
-                  Internet
-                     |
-                     v
-          Application Load Balancer
-                     |
-                     v
+                 Internet
+                    |
+                    v
+         Application Load Balancer
+                    |
+                    v
               EC2 Instances
-                     |
-          +----------+----------+
-          |                     |
-          v                     v
-    Frontend Container    Backend Container
-       (Nginx)              (FastAPI)
-          |                     |
-          +----------+----------+
-                     |
-                     v
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+    Frontend Container  Backend Container
+        (Nginx)             (FastAPI)
+          |                   |
+          +---------+---------+
+                    |
+                    v
                PostgreSQL
-                 (RDS)
+                  (RDS)
 ```
-
-Docker images are maintained separately for the frontend and backend.
 
 ## Project Structure
 
 ```text
 varnam/
-│
 ├── frontend/
 │   ├── src/
-│   ├── public/
 │   ├── Dockerfile
 │   ├── nginx.conf
-│   ├── package.json
-│   └── package-lock.json
+│   └── package.json
 │
 ├── backend/
 │   ├── main.py
@@ -75,121 +75,136 @@ varnam/
     └── main.tf
 ```
 
-## Application Containerization
+## AWS Infrastructure – Terraform
 
-The frontend and backend are packaged as independent Docker images.
+Terraform provisions:
 
-### Frontend
-
-- Uses Node.js to build the React application.
-- Uses Nginx as the production web server.
-- Serves static frontend assets.
-- Proxies API requests to the backend service.
-
-### Backend
-
-- Built using FastAPI.
-- Runs using Uvicorn.
-- Exposes application and health-check endpoints.
-- Designed to communicate with PostgreSQL.
-
-## AWS Infrastructure
-
-The infrastructure is provisioned using Terraform.
-
-Key components:
-
-- VPC with public and private subnets.
-- Internet Gateway and public routing.
+- VPC, public and private subnets.
+- Internet Gateway and route tables.
 - Application Load Balancer.
-- EC2 instances managed through an Auto Scaling Group.
-- Security groups controlling application and database access.
+- EC2 instances and Auto Scaling Group.
+- Security groups.
 - Amazon RDS for PostgreSQL.
-- Amazon ECR repositories for application images.
-- IAM roles for EC2 access to AWS services.
+- Amazon ECR repositories.
+- IAM roles.
 
-## Container Image Deployment
+## CI/CD Pipeline – Jenkins
 
-Application images are stored in Amazon ECR.
+GitHub is integrated with Jenkins using webhooks.
 
-Deployment workflow:
+### GitHub Webhook Configuration
 
-1. Build frontend and backend Docker images.
-2. Authenticate Docker with Amazon ECR.
-3. Tag the images with their respective ECR repository URIs.
-4. Push the images to ECR.
-5. Pull the images onto EC2 instances.
-6. Run the application containers.
+1. Configure the GitHub repository in Jenkins.
+2. Enable `GitHub hook trigger for GITScm polling` in Jenkins Build Triggers.
+3. Add the Jenkins endpoint in GitHub → Settings → Webhooks:
+
+   `https://<JENKINS_SERVER>/github-webhook/`
+
+4. Select `application/json`.
+5. Select `Just the push event`.
+
+**Why webhooks?**
+- Automatically trigger Jenkins builds on GitHub push events.
+- Eliminate manual build triggers.
+- Avoid periodic repository polling.
+- Enable faster CI feedback.
+
+### Jenkins Pipeline Stages
+
+| Stage | Operation |
+|---|---|
+| Checkout | Checkout source code from GitHub |
+| Build Images | Build frontend and backend Docker images |
+| Push to ECR | Authenticate with AWS, tag and push images |
+
+### Pipeline Execution Flow
+
+1. Developer pushes changes to GitHub.
+2. GitHub webhook triggers Jenkins.
+3. Jenkins checks out the latest code.
+4. Generates an image tag using the Git commit hash.
+5. Builds frontend and backend Docker images.
+6. Retrieves AWS credentials from Jenkins Credentials using the AWS Credentials plugin.
+7. Authenticates with AWS using STS.
+8. Logs in to Amazon ECR.
+9. Tags and pushes both images to ECR.
+
+![Varnam](images/4.png)
+
+### AWS Authentication
+
+AWS credentials are stored securely in Jenkins and injected using `withCredentials`.
+
+```groovy
+withCredentials([[
+    $class: 'AmazonWebServicesCredentialsBinding',
+    credentialsId: 'aws'
+]]) {
+    sh '''
+        aws sts get-caller-identity
+    '''
+}
+```
 
 ### ECR Authentication
 
 ```bash
-aws ecr get-login-password --region ap-southeast-2 | \
-docker login --username AWS --password-stdin \
-<ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com
+ACCOUNT_ID=$(aws sts get-caller-identity \
+    --query Account --output text)
+
+REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+aws ecr get-login-password --region ${AWS_REGION} |
+docker login --username AWS --password-stdin ${REGISTRY}
 ```
 
-### Push Images
+### Push Images to ECR
 
 ```bash
-docker tag varnam-frontend:local \
-<ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-frontend:latest
+docker tag ${FRONTEND_REPO}:${IMAGE_TAG} \
+${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
 
-docker tag varnam-backend:local \
-<ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-backend:latest
+docker tag ${BACKEND_REPO}:${IMAGE_TAG} \
+${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
+
+docker push ${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}
+
+docker push ${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}
 ```
+![Varnam](images/5.png)
+
+![Varnam](images/6.png)
+## Container Deployment on EC2
+
+Authenticate using the EC2 instance IAM role and pull the images:
 
 ```bash
-docker push <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-frontend:latest
+docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/booknest-frontend:<IMAGE_TAG>
 
-docker push <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-backend:latest
+docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/booknest-backend:<IMAGE_TAG>
 ```
 
-### Pull Images on EC2
+Run the application containers using Docker.
 
-Authenticate the EC2 instance using its IAM role, then pull:
+## Security
 
-```bash
-docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-frontend:latest
-
-docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/varnam-backend:latest
-```
-
-## Security Considerations
-
-- Use IAM roles instead of hardcoded AWS access keys.
-- Restrict application instance access through security groups.
-- Allow database connections only from the application security group.
-- Keep RDS instances private.
-- Avoid storing database credentials in source code.
-- Use encrypted storage for database resources.
-- Expose the application through the ALB rather than directly exposing application containers.
-
-## Monitoring and Operations
-
-Operational monitoring can be implemented using Amazon CloudWatch.
-
-Recommended metrics:
-
-- EC2 CPU utilization.
-- ALB request count and HTTP 5xx errors.
-- Healthy target count.
-- RDS CPU utilization.
-- RDS free storage space.
+- Store AWS credentials securely in Jenkins.
+- Use IAM roles for EC2 access to AWS services.
+- Restrict access using security groups.
+- Keep RDS in private subnets.
+- Avoid hardcoding database credentials.
+- Use HTTPS for webhook communication.
 
 ## Project Objectives
 
 - Provision AWS infrastructure using Terraform.
-- Containerize a multi-tier application.
-- Maintain separate frontend and backend images.
-- Use ECR as a centralized container registry.
-- Deploy containerized workloads onto EC2.
-- Implement secure network communication between application tiers.
-- Build a scalable and maintainable AWS deployment architecture.
+- Containerize frontend and backend applications.
+- Automate image builds using Jenkins.
+- Integrate GitHub webhooks for automatic pipeline triggers.
+- Push Docker images to Amazon ECR.
+- Deploy containers on EC2.
+- Implement secure AWS access and network communication.
 
 ---
 
-**Project:** Varnam  
-**Cloud Provider:** AWS  
-**Infrastructure as Code:** Terraform  
-**Application Deployment:** Docker and Amazon ECR
+**Cloud:** AWS | **IaC:** Terraform | **CI/CD:** Jenkins | **SCM:** GitHub | **Containers:** Docker | **Registry:** Amazon ECR
