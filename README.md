@@ -183,6 +183,10 @@ docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/booknest-frontend:
 
 docker pull <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/booknest-backend:<IMAGE_TAG>
 ```
+### Successful Deployment of Booknest 
+
+![Varnam](images/7.png)
+![Varnam](images/8.png)
 
 Run the application containers using Docker.
 
